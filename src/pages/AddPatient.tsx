@@ -1,164 +1,237 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AddPatient = () => {
+// Helper function to extract doctorCode from JWT token
+const getDoctorCodeFromToken = () => {
+  const token = localStorage.getItem('token'); // Assuming you store the JWT in localStorage
+  if (!token) return null;
+
+  const payload = JSON.parse(atob(token.split('.')[1])); // Decode the JWT payload
+  return payload?.doctorCode || null; // Get doctorCode from the token's payload
+};
+
+const styles = {
+  container: {
+    maxWidth: "600px",
+    margin: "40px auto",
+    padding: "30px",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+    fontFamily: "sans-serif",
+  },
+  heading: {
+    textAlign: "center",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    margin: "8px 0 15px",
+    border: "1px solid #ccc",
+    borderRadius: "5px",
+    fontSize: "1rem",
+  },
+  medicineSection: {
+    marginTop: "20px",
+  },
+  medicineLabel: {
+    fontWeight: "bold",
+    display: "block",
+    marginBottom: "10px",
+  },
+  medicineRow: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "10px",
+  },
+  button: {
+    backgroundColor: "#28a745",
+    color: "#fff",
+    padding: "12px",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "1rem",
+    width: "100%",
+    cursor: "pointer",
+    marginTop: "20px",
+  },
+  addButton: {
+    backgroundColor: "#f0ad4e",
+    border: "none",
+    color: "#fff",
+    padding: "8px 12px",
+    borderRadius: "4px",
+    cursor: "pointer",
+    marginTop: "5px",
+  },
+  removeButton: {
+    backgroundColor: "#d9534f",
+    border: "none",
+    color: "#fff",
+    padding: "8px 12px",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+};
+
+const Form = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    name: '',
-    email: '',
-    age: '',
-    gender: '',
-    medicalHistory: ''
+    patientName: "",
+    diseaseName: "",
+    expectedRecoveryTime: "",
+    followUpDate: "",
+    medicines: [{ name: "", time: "" }],
   });
-  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number | null = null,
+    field: string | null = null
+  ) => {
+    const { name, value } = e.target;
+
+    if (index !== null && field !== null) {
+      // Update the specific field in the medicines array
+      const updatedMeds = [...formData.medicines];
+      updatedMeds[index] = { ...updatedMeds[index], [field]: value };
+      setFormData({ ...formData, medicines: updatedMeds });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const addMedicine = () => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      medicines: [...formData.medicines, { name: "", time: "" }],
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const removeMedicine = (index: number) => {
+    const updatedMeds = formData.medicines.filter((_, i) => i !== index);
+    setFormData({ ...formData, medicines: updatedMeds });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Generate a unique code for the patient
-    const patientCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setGeneratedCode(patientCode);
-    
-    // Here you would typically make an API call to add the patient
-    // For now, we'll just show the generated code
+
+    // Extract doctorCode from the token
+    const doctorCode = getDoctorCodeFromToken();
+    if (!doctorCode) {
+      console.log("Doctor code is missing or invalid");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/doctor/add-patient', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          doctorCode: doctorCode, // Send the doctorCode from the token
+          patientName: formData.patientName,
+          diseaseName: formData.diseaseName,
+          expectedRecoveryTime: formData.expectedRecoveryTime,
+          followUpDate: formData.followUpDate,
+          medicines: formData.medicines,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log('Patient added successfully', result);
+      } else {
+        console.log('Error:', result.msg);
+      }
+    } catch (error) {
+      console.error('Error while adding patient:', error);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Add New Patient
-          </h2>
-        </div>
-        {!generatedCode ? (
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            <div className="rounded-md shadow-sm -space-y-px">
-              <div>
-                <label htmlFor="username" className="sr-only">Username</label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Username"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="name" className="sr-only">Full Name</label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="sr-only">Email address</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                  value={formData.email}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="age" className="sr-only">Age</label>
-                <input
-                  id="age"
-                  name="age"
-                  type="number"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Age"
-                  value={formData.age}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label htmlFor="gender" className="sr-only">Gender</label>
-                <select
-                  id="gender"
-                  name="gender"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  value={formData.gender}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label htmlFor="medicalHistory" className="sr-only">Medical History</label>
-                <textarea
-                  id="medicalHistory"
-                  name="medicalHistory"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                  placeholder="Medical History"
-                  value={formData.medicalHistory}
-                  onChange={handleChange}
-                  rows={4}
-                />
-              </div>
-            </div>
+    <div style={styles.container}>
+      <h2 style={styles.heading}>Post-Hospital Recovery Form</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="patientName"
+          placeholder="Patient Name"
+          value={formData.patientName}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
+          type="text"
+          name="diseaseName"
+          placeholder="Disease Name"
+          value={formData.diseaseName}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
+          type="text"
+          name="expectedRecoveryTime"
+          placeholder="Expected Recovery Time"
+          value={formData.expectedRecoveryTime}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
+        <input
+          type="date"
+          name="followUpDate"
+          value={formData.followUpDate}
+          onChange={handleChange}
+          style={styles.input}
+          required
+        />
 
-            <div>
+        <div style={styles.medicineSection}>
+          <label style={styles.medicineLabel}>Medicines</label>
+          {formData.medicines.map((medicine, index) => (
+            <div key={index} style={styles.medicineRow}>
+              <input
+                type="text"
+                placeholder="Medicine Name"
+                value={medicine.name}
+                onChange={(e) => handleChange(e, index, "name")}
+                style={styles.input}
+                required
+              />
+              <input
+                type="time"
+                value={medicine.time}
+                onChange={(e) => handleChange(e, index, "time")}
+                style={styles.input}
+                required
+              />
               <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                type="button"
+                onClick={() => removeMedicine(index)}
+                style={styles.removeButton}
               >
-                Add Patient
+                Remove
               </button>
             </div>
-          </form>
-        ) : (
-          <div className="mt-8 bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Patient Added Successfully!</h3>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-500">Username</p>
-                <p className="mt-1 text-lg text-gray-900">{formData.username}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Unique Login Code</p>
-                <p className="mt-1 text-lg font-mono text-gray-900">{generatedCode}</p>
-              </div>
-              <div className="mt-6">
-                <button
-                  onClick={() => navigate('/doctor/options')}
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                >
-                  Back to Options
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+          ))}
+          <button type="button" onClick={addMedicine} style={styles.addButton}>
+            + Add Medicine
+          </button>
+        </div>
+
+        <button type="submit" style={styles.button}>
+          Submit Recovery Plan
+        </button>
+      </form>
     </div>
   );
 };
 
-export default AddPatient; 
+export default Form;

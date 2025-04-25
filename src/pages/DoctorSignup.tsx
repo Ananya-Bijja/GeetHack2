@@ -10,6 +10,7 @@ const DoctorSignup = () => {
     specialization: '',
     licenseNumber: ''
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -18,21 +19,35 @@ const DoctorSignup = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically make an API call to register the doctor
-    // For now, we'll just navigate to the doctor dashboard
-    navigate('/doctor/dashboard');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/doctor/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        // Navigate to a doctor dashboard or wherever appropriate after successful signup
+        navigate('/doctor/dashboard');
+      } else {
+        setErrorMessage(data.msg || 'Signup failed');
+      }
+    } catch (err) {
+      setErrorMessage('Error during signup');
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Doctor Sign Up
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Doctor Sign Up</h2>
         </div>
+        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -94,7 +109,7 @@ const DoctorSignup = () => {
                 name="licenseNumber"
                 type="text"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="License Number"
                 value={formData.licenseNumber}
                 onChange={handleChange}
@@ -116,4 +131,4 @@ const DoctorSignup = () => {
   );
 };
 
-export default DoctorSignup; 
+export default DoctorSignup;

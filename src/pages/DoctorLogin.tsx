@@ -11,6 +11,7 @@ const DoctorLogin: React.FC<DoctorLoginProps> = ({ onLogin }) => {
     email: '',
     password: ''
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -19,22 +20,35 @@ const DoctorLogin: React.FC<DoctorLoginProps> = ({ onLogin }) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically make an API call to authenticate the doctor
-    // For now, we'll just set the authentication state and navigate
-    onLogin('doctor');
-    navigate('/doctor/options');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/doctor/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        onLogin('doctor');
+        navigate('/doctor/options'); // Navigate to the doctor dashboard
+      } else {
+        setErrorMessage(data.msg || 'Login failed');
+      }
+    } catch (err) {
+      setErrorMessage('Error logging in');
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Doctor Login
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Doctor Login</h2>
         </div>
+        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -79,4 +93,4 @@ const DoctorLogin: React.FC<DoctorLoginProps> = ({ onLogin }) => {
   );
 };
 
-export default DoctorLogin; 
+export default DoctorLogin;

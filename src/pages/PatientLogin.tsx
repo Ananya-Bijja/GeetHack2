@@ -11,6 +11,7 @@ const PatientLogin: React.FC<PatientLoginProps> = ({ onLogin }) => {
     username: '',
     code: ''
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -19,25 +20,36 @@ const PatientLogin: React.FC<PatientLoginProps> = ({ onLogin }) => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically validate the username and code against your backend
-    // For now, we'll just set the authentication state and navigate
-    onLogin('patient');
-    navigate('/patient/dashboard');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/patient/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        onLogin('patient');
+        navigate('/patient/dashboard'); // Redirect to patient dashboard
+      } else {
+        setErrorMessage(data.msg || 'Login failed');
+      }
+    } catch (err) {
+      setErrorMessage('Error logging in');
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Patient Login
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your username and unique code provided by your doctor
-          </p>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Patient Login</h2>
+          <p className="mt-2 text-center text-sm text-gray-600">Enter your username and unique code provided by your doctor</p>
         </div>
+        {errorMessage && <p className="text-red-500 text-center">{errorMessage}</p>}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -82,4 +94,4 @@ const PatientLogin: React.FC<PatientLoginProps> = ({ onLogin }) => {
   );
 };
 
-export default PatientLogin; 
+export default PatientLogin;
