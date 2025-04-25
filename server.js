@@ -451,6 +451,38 @@ app.post('/api/patient/login', async (req, res) => {
     res.status(500).json({ msg: 'Login failed' });
   }
 });
+// ==== Get Patients for a Doctor ====
+// app.get('/api/doctor/patients', async (req, res) => {
+//   const doctorCode = req.headers['doctor-code'];
+
+//   if (!doctorCode) {
+//     return res.status(403).json({ msg: 'Doctor code missing' });
+//   }
+
+//   try {
+//     const patients = await Patient.find({ doctorCode });
+//     res.json(patients);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ msg: 'Failed to fetch patients' });
+//   }
+// });
+app.get('/api/doctor/patients', async (req, res) => {
+  const doctorCode = req.headers['doctor-code'];
+
+  if (!doctorCode) {
+    console.log('❌ Missing doctor-code in headers');
+    return res.status(403).json({ msg: 'Doctor code missing' });
+  }
+
+  try {
+    const patients = await Patient.find({ doctorCode });
+    res.json(patients);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Failed to fetch patients' });
+  }
+});
 
 // ==== Start Server ====
 const PORT = process.env.PORT || 5000;
