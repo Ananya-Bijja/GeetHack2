@@ -234,8 +234,171 @@
 // //   );
 // // };
 
-// // export default Form;
-// import React, { useState } from 'react';
+// // // // export default Form;
+// // // import React, { useState } from 'react';
+
+// // // const AddPatient: React.FC = () => {
+// // //   const [username, setUsername] = useState('');
+// // //   const [password, setPassword] = useState('');
+// // //   const [doctorCode, setDoctorCode] = useState('');
+// // //   const [message, setMessage] = useState('');
+
+// // //   const handleAddPatient = async (e: React.FormEvent) => {
+// // //     e.preventDefault();
+
+// // //     try {
+// // //       const res = await fetch('http://localhost:5000/api/doctor/add-patient', {
+// // //         method: 'POST',
+// // //         headers: { 'Content-Type': 'application/json' },
+// // //         body: JSON.stringify({ doctorCode, username, password })
+// // //       });
+
+// // //       const data = await res.json();
+// // //       if (res.ok) {
+// // //         setMessage('✅ Patient added successfully!');
+// // //         setUsername('');
+// // //         setPassword('');
+// // //       } else {
+// // //         setMessage(`❌ ${data.msg}`);
+// // //       }
+// // //     } catch (error) {
+// // //       setMessage('❌ Failed to add patient.');
+// // //       console.error(error);
+// // //     }
+// // //   };
+
+// // //   return (
+// // //     <div className="max-w-md mx-auto mt-8 p-4 border rounded shadow">
+// // //       <h2 className="text-xl font-semibold mb-4">Add New Patient</h2>
+// // //       <form onSubmit={handleAddPatient} className="space-y-4">
+// // //         <div>
+// // //           <label>Doctor Code</label>
+// // //           <input
+// // //             type="text"
+// // //             value={doctorCode}
+// // //             onChange={(e) => setDoctorCode(e.target.value)}
+// // //             className="w-full p-2 border rounded"
+// // //             required
+// // //           />
+// // //         </div>
+// // //         <div>
+// // //           <label>Patient Username</label>
+// // //           <input
+// // //             type="text"
+// // //             value={username}
+// // //             onChange={(e) => setUsername(e.target.value)}
+// // //             className="w-full p-2 border rounded"
+// // //             required
+// // //           />
+// // //         </div>
+// // //         <div>
+// // //           <label>Patient Password</label>
+// // //           <input
+// // //             type="password"
+// // //             value={password}
+// // //             onChange={(e) => setPassword(e.target.value)}
+// // //             className="w-full p-2 border rounded"
+// // //             required
+// // //           />
+// // //         </div>
+// // //         <button
+// // //           type="submit"
+// // //           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+// // //         >
+// // //           Add Patient
+// // //         </button>
+// // //       </form>
+// // //       {message && <p className="mt-4 text-sm text-center">{message}</p>}
+// // //     </div>
+// // //   );
+// // // };
+
+// // // export default AddPatient;
+// // import React, { useState, useEffect } from 'react';
+
+// // const AddPatient: React.FC = () => {
+// //   const [username, setUsername] = useState('');
+// //   const [password, setPassword] = useState('');
+// //   const [doctorCode, setDoctorCode] = useState('');
+// //   const [message, setMessage] = useState('');
+
+// //   useEffect(() => {
+// //     const storedCode = localStorage.getItem('doctorCode');
+// //     if (storedCode) setDoctorCode(storedCode);
+// //   }, []);
+
+// //   const handleAddPatient = async (e: React.FormEvent) => {
+// //     e.preventDefault();
+
+// //     try {
+// //       const res = await fetch('http://localhost:5000/api/doctor/add-patient', {
+// //         method: 'POST',
+// //         headers: { 'Content-Type': 'application/json' },
+// //         body: JSON.stringify({ doctorCode, username, password }),
+// //       });
+
+// //       const data = await res.json();
+// //       if (res.ok) {
+// //         setMessage('✅ Patient added successfully!');
+// //         setUsername('');
+// //         setPassword('');
+// //       } else {
+// //         setMessage(`❌ ${data.msg}`);
+// //       }
+// //     } catch (error) {
+// //       console.error(error);
+// //       setMessage('❌ Failed to add patient.');
+// //     }
+// //   };
+
+// //   return (
+// //     <div className="max-w-md mx-auto mt-8 p-4 border rounded shadow">
+// //       <h2 className="text-xl font-semibold mb-4">Add New Patient</h2>
+// //       <form onSubmit={handleAddPatient} className="space-y-4">
+// //         <div>
+// //           <label>Doctor Code</label>
+// //           <input
+// //             type="text"
+// //             value={doctorCode}
+// //             onChange={(e) => setDoctorCode(e.target.value)}
+// //             className="w-full p-2 border rounded"
+// //             required
+// //           />
+// //         </div>
+// //         <div>
+// //           <label>Patient Username</label>
+// //           <input
+// //             type="text"
+// //             value={username}
+// //             onChange={(e) => setUsername(e.target.value)}
+// //             className="w-full p-2 border rounded"
+// //             required
+// //           />
+// //         </div>
+// //         <div>
+// //           <label>Patient Password</label>
+// //           <input
+// //             type="password"
+// //             value={password}
+// //             onChange={(e) => setPassword(e.target.value)}
+// //             className="w-full p-2 border rounded"
+// //             required
+// //           />
+// //         </div>
+// //         <button
+// //           type="submit"
+// //           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+// //         >
+// //           Add Patient
+// //         </button>
+// //       </form>
+// //       {message && <p className="mt-4 text-sm text-center">{message}</p>}
+// //     </div>
+// //   );
+// // };
+
+// // export default AddPatient;
+// import React, { useState, useEffect } from 'react';
 
 // const AddPatient: React.FC = () => {
 //   const [username, setUsername] = useState('');
@@ -243,14 +406,26 @@
 //   const [doctorCode, setDoctorCode] = useState('');
 //   const [message, setMessage] = useState('');
 
+//   // ✅ Get doctorCode from localStorage
+//   useEffect(() => {
+//     const storedCode = localStorage.getItem('doctorCode');
+//     if (storedCode) setDoctorCode(storedCode);
+//     else setMessage('❌ Doctor not logged in.');
+//   }, []);
+
 //   const handleAddPatient = async (e: React.FormEvent) => {
 //     e.preventDefault();
+
+//     if (!doctorCode) {
+//       setMessage('❌ Doctor code is missing. Please log in again.');
+//       return;
+//     }
 
 //     try {
 //       const res = await fetch('http://localhost:5000/api/doctor/add-patient', {
 //         method: 'POST',
 //         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({ doctorCode, username, password })
+//         body: JSON.stringify({ doctorCode, username, password }),
 //       });
 
 //       const data = await res.json();
@@ -262,8 +437,8 @@
 //         setMessage(`❌ ${data.msg}`);
 //       }
 //     } catch (error) {
-//       setMessage('❌ Failed to add patient.');
 //       console.error(error);
+//       setMessage('❌ Failed to add patient.');
 //     }
 //   };
 
@@ -271,16 +446,6 @@
 //     <div className="max-w-md mx-auto mt-8 p-4 border rounded shadow">
 //       <h2 className="text-xl font-semibold mb-4">Add New Patient</h2>
 //       <form onSubmit={handleAddPatient} className="space-y-4">
-//         <div>
-//           <label>Doctor Code</label>
-//           <input
-//             type="text"
-//             value={doctorCode}
-//             onChange={(e) => setDoctorCode(e.target.value)}
-//             className="w-full p-2 border rounded"
-//             required
-//           />
-//         </div>
 //         <div>
 //           <label>Patient Username</label>
 //           <input
@@ -319,22 +484,53 @@ import React, { useState, useEffect } from 'react';
 const AddPatient: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [doctorCode, setDoctorCode] = useState('');
+  const [diseaseName, setDiseaseName] = useState('');
+  const [expectedRecoveryTime, setExpectedRecoveryTime] = useState('');
+  const [followUpDate, setFollowUpDate] = useState('');
+  const [medicines, setMedicines] = useState([{ name: '', time: '' }]);
   const [message, setMessage] = useState('');
 
-  useEffect(() => {
-    const storedCode = localStorage.getItem('doctorCode');
-    if (storedCode) setDoctorCode(storedCode);
-  }, []);
+  const handleMedicineChange = (index: number, field: string, value: string) => {
+    const updated = [...medicines];
+    updated[index][field] = value;
+    setMedicines(updated);
+  };
+
+  const addMedicineField = () => {
+    setMedicines([...medicines, { name: '', time: '' }]);
+  };
+
+  const removeMedicineField = (index: number) => {
+    const updated = medicines.filter((_, i) => i !== index);
+    setMedicines(updated);
+  };
 
   const handleAddPatient = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const doctorCode = localStorage.getItem('doctorCode');
+    if (!doctorCode) {
+      setMessage('❌ Doctor not logged in.');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:5000/api/doctor/add-patient', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ doctorCode, username, password }),
+        // ers: { 'Content-Type': 'applicaheadtion/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'doctor-code': doctorCode, // ✅ Pass doctorCode in header
+        },
+        
+        body: JSON.stringify({
+          username,
+          password,
+          diseaseName,
+          expectedRecoveryTime,
+          followUpDate,
+          medicines
+        }),
       });
 
       const data = await res.json();
@@ -342,6 +538,10 @@ const AddPatient: React.FC = () => {
         setMessage('✅ Patient added successfully!');
         setUsername('');
         setPassword('');
+        setDiseaseName('');
+        setExpectedRecoveryTime('');
+        setFollowUpDate('');
+        setMedicines([{ name: '', time: '' }]);
       } else {
         setMessage(`❌ ${data.msg}`);
       }
@@ -352,45 +552,39 @@ const AddPatient: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8 p-4 border rounded shadow">
+    <div className="max-w-xl mx-auto mt-8 p-4 border rounded shadow">
       <h2 className="text-xl font-semibold mb-4">Add New Patient</h2>
       <form onSubmit={handleAddPatient} className="space-y-4">
-        <div>
-          <label>Doctor Code</label>
-          <input
-            type="text"
-            value={doctorCode}
-            onChange={(e) => setDoctorCode(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div>
-          <label>Patient Username</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <div>
-          <label>Patient Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Add Patient
-        </button>
+        <input type="text" placeholder="Patient Username" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-2 border rounded" required />
+        <input type="password" placeholder="Patient Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 border rounded" required />
+        <input type="text" placeholder="Disease Name" value={diseaseName} onChange={(e) => setDiseaseName(e.target.value)} className="w-full p-2 border rounded" required />
+        <input type="text" placeholder="Expected Recovery Time" value={expectedRecoveryTime} onChange={(e) => setExpectedRecoveryTime(e.target.value)} className="w-full p-2 border rounded" required />
+        <input type="date" placeholder="Follow-up Date" value={followUpDate} onChange={(e) => setFollowUpDate(e.target.value)} className="w-full p-2 border rounded" required />
+
+        <label className="block font-semibold">Medicines</label>
+        {medicines.map((med, index) => (
+          <div key={index} className="flex space-x-2">
+            <input
+              type="text"
+              placeholder="Name"
+              value={med.name}
+              onChange={(e) => handleMedicineChange(index, 'name', e.target.value)}
+              className="w-1/2 p-2 border rounded"
+              required
+            />
+            <input
+              type="time"
+              value={med.time}
+              onChange={(e) => handleMedicineChange(index, 'time', e.target.value)}
+              className="w-1/2 p-2 border rounded"
+              required
+            />
+            <button type="button" onClick={() => removeMedicineField(index)} className="text-red-500 font-bold">X</button>
+          </div>
+        ))}
+        <button type="button" onClick={addMedicineField} className="text-blue-600">+ Add Medicine</button>
+
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add Patient</button>
       </form>
       {message && <p className="mt-4 text-sm text-center">{message}</p>}
     </div>

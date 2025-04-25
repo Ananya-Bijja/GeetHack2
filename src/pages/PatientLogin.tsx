@@ -106,8 +106,8 @@ const PatientLogin: React.FC<PatientLoginProps> = ({ onLogin }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
-    password: '',
-    doctorCode: ''
+    password: ''
+    // doctorCode: ''
   });
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -173,7 +173,7 @@ const PatientLogin: React.FC<PatientLoginProps> = ({ onLogin }) => {
                 placeholder="Enter Password"
               />
             </div>
-            <div>
+            {/* <div>
               <label>Doctor Code</label>
               <input
                 name="doctorCode"
@@ -184,7 +184,7 @@ const PatientLogin: React.FC<PatientLoginProps> = ({ onLogin }) => {
                 className="w-full p-2 border rounded"
                 placeholder="Enter Doctor's Unique Code"
               />
-            </div>
+            </div> */}
           </div>
 
           <button
