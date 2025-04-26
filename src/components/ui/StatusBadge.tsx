@@ -3,11 +3,11 @@ import React from 'react';
 type StatusType = 'improving' | 'stable' | 'concerning' | 'critical';
 
 interface StatusBadgeProps {
-  status: StatusType;
+  status?: StatusType;  // Make status optional
   className?: string;
 }
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ status, className = '' }) => {
+const StatusBadge: React.FC<StatusBadgeProps> = ({ status = 'stable', className = '' }) => {
   const getStatusStyles = (): string => {
     switch (status) {
       case 'improving':

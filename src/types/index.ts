@@ -49,6 +49,7 @@ export interface Symptom {
   name: string;
   severity: number; // 0-10
   duration: string;
+  severityCategory: 'Critical' |'Moderate'|'Mild';
 }
 
 export interface Vitals {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Dashboard from './pages/Dashboard';
@@ -104,14 +104,33 @@ function App() {
   const [userRole, setUserRole] = useState<'patient' | 'doctor' | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  useEffect(() => {
+    // Retrieve the user role and authentication status from localStorage
+    const storedRole = localStorage.getItem('userRole');
+    const storedAuthStatus = localStorage.getItem('isAuthenticated');
+    
+    if (storedRole && storedAuthStatus === 'true') {
+      setUserRole(storedRole);
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   const handleLogin = (role: 'patient' | 'doctor') => {
     setUserRole(role);
     setIsAuthenticated(true);
+    
+    // Save the authentication state to localStorage
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('isAuthenticated', 'true');
   };
 
   const handleLogout = () => {
     setUserRole(null);
     setIsAuthenticated(false);
+    
+    // Remove the authentication state from localStorage
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('isAuthenticated');
   };
 
   return (

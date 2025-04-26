@@ -3,7 +3,7 @@ import Card from '../ui/Card';
 import StatusBadge from '../ui/StatusBadge';
 
 interface RecoveryTrendChartProps {
-  data: {
+  data?: {
     dates: string[];
     painLevels: number[];
     medicationAdherence: number[];
@@ -14,23 +14,32 @@ interface RecoveryTrendChartProps {
 }
 
 const RecoveryTrendChart: React.FC<RecoveryTrendChartProps> = ({ data }) => {
-  // This would normally be implemented with a proper charting library
-  // like Chart.js, Recharts, or ApexCharts in a production app
-  
-  const maxPain = Math.max(...data.painLevels);
-  const minPain = Math.min(...data.painLevels);
+  // Fallback to an empty object if data is undefined
+  const safeData = data || {
+    dates: [],
+    painLevels: [],
+    medicationAdherence: [],
+    symptomsCount: [],
+    overallStatus: 'stable',
+    score: 0
+  };
+
+  // Safely calculate max and min pain levels
+  const maxPain = safeData.painLevels && safeData.painLevels.length ? Math.max(...safeData.painLevels) : 0;
+  const minPain = safeData.painLevels && safeData.painLevels.length ? Math.min(...safeData.painLevels) : 0;
+
   const painTrend = maxPain - minPain > 1
-    ? data.painLevels[data.painLevels.length - 1] < data.painLevels[0]
+    ? safeData.painLevels[safeData.painLevels.length - 1] < safeData.painLevels[0]
       ? 'improving'
       : 'worsening'
     : 'stable';
-    
-  const adherenceTrend = data.medicationAdherence[data.medicationAdherence.length - 1] > 90
+
+  const adherenceTrend = safeData.medicationAdherence && safeData.medicationAdherence.length && safeData.medicationAdherence[safeData.medicationAdherence.length - 1] > 90
     ? 'excellent'
-    : data.medicationAdherence[data.medicationAdherence.length - 1] > 70
+    : safeData.medicationAdherence && safeData.medicationAdherence.length && safeData.medicationAdherence[safeData.medicationAdherence.length - 1] > 70
       ? 'good'
       : 'needs improvement';
-  
+
   return (
     <Card 
       title="Recovery Progress"
@@ -43,38 +52,42 @@ const RecoveryTrendChart: React.FC<RecoveryTrendChartProps> = ({ data }) => {
               <div className="w-24 bg-gray-200 h-2 rounded-full overflow-hidden">
                 <div 
                   className={`h-2 ${
-                    data.score >= 75 
+                    safeData.score >= 75 
                       ? 'bg-success-500' 
-                      : data.score >= 50 
+                      : safeData.score >= 50 
                         ? 'bg-warning-500' 
                         : 'bg-error-500'
                   }`}
-                  style={{ width: `${data.score}%` }}
+                  style={{ width: `${safeData.score}%` }}
                 ></div>
               </div>
-              <span className="ml-2 text-sm font-medium">{data.score}/100</span>
+              <span className="ml-2 text-sm font-medium">{safeData.score}/100</span>
             </div>
           </div>
-          <StatusBadge status={data.overallStatus} className="text-sm px-3 py-1" />
+          <StatusBadge status={safeData.overallStatus} className="text-sm px-3 py-1" />
         </div>
       }
     >
       <div className="space-y-6">
         {/* Chart mockup - would use a real chart library in production */}
         <div className="h-48 w-full flex items-end justify-between p-2 border-b border-l border-gray-300 relative">
-          {data.dates.map((date, i) => (
-            <div key={i} className="flex flex-col items-center w-1/7">
-              <div className="relative h-36 w-4 flex flex-col-reverse mb-1">
-                <div
-                  className="w-4 bg-primary-500 rounded-t"
-                  style={{ height: `${(data.painLevels[i] / 10) * 100}%` }}
-                ></div>
+          {safeData.dates && safeData.dates.length > 0 ? (
+            safeData.dates.map((date, i) => (
+              <div key={i} className="flex flex-col items-center w-1/7">
+                <div className="relative h-36 w-4 flex flex-col-reverse mb-1">
+                  <div
+                    className="w-4 bg-primary-500 rounded-t"
+                    style={{ height: `${(safeData.painLevels[i] / 10) * 100}%` }}
+                  ></div>
+                </div>
+                <span className="text-xs text-gray-500 transform -rotate-45 origin-top-left mt-2">
+                  {new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </span>
               </div>
-              <span className="text-xs text-gray-500 transform -rotate-45 origin-top-left mt-2">
-                {new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-              </span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="text-center text-gray-500">No recovery data available.</div>
+          )}
           
           {/* Y-axis labels */}
           <div className="absolute top-0 left-0 h-full flex flex-col justify-between py-2">
@@ -90,11 +103,10 @@ const RecoveryTrendChart: React.FC<RecoveryTrendChartProps> = ({ data }) => {
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-600">
                 {painTrend === 'improving' 
-                  ? 'Pain levels are decreasing, showing good recovery progress.'
-                  : painTrend === 'worsening'
-                    ? 'Pain levels are increasing, might require attention.'
-                    : 'Pain levels are stable.'
-                }
+                  ? 'Pain levels are decreasing, showing good recovery progress.' 
+                  : painTrend === 'worsening' 
+                    ? 'Pain levels are increasing, might require attention.' 
+                    : 'Pain levels are stable.'}
               </p>
               <span className={`text-sm font-medium ${
                 painTrend === 'improving' 
@@ -113,11 +125,10 @@ const RecoveryTrendChart: React.FC<RecoveryTrendChartProps> = ({ data }) => {
             <div className="flex justify-between items-center">
               <p className="text-sm text-gray-600">
                 {adherenceTrend === 'excellent' 
-                  ? 'Excellent medication adherence, continue the good work!'
-                  : adherenceTrend === 'good'
-                    ? 'Good medication adherence, try to be more consistent.'
-                    : 'Medication adherence needs improvement.'
-                }
+                  ? 'Excellent medication adherence, continue the good work!' 
+                  : adherenceTrend === 'good' 
+                    ? 'Good medication adherence, try to be more consistent.' 
+                    : 'Medication adherence needs improvement.'}
               </p>
               <span className={`text-sm font-medium ${
                 adherenceTrend === 'excellent' 
@@ -126,7 +137,7 @@ const RecoveryTrendChart: React.FC<RecoveryTrendChartProps> = ({ data }) => {
                     ? 'text-warning-600'
                     : 'text-error-600'
               }`}>
-                {data.medicationAdherence[data.medicationAdherence.length - 1]}%
+                {safeData.medicationAdherence[safeData.medicationAdherence.length - 1] || 'N/A'}%
               </span>
             </div>
           </div>

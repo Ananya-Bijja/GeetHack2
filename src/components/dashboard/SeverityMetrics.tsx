@@ -1,7 +1,8 @@
+// HealthMetricsChart.tsx (or SeverityMetricsChart.tsx)
 import React from 'react';
 import Card from '../ui/Card';
 
-interface HealthMetricsChartProps {
+interface SeverityMetricsChartProps {
   title: string;
   data: {
     labels: string[];
@@ -13,7 +14,7 @@ interface HealthMetricsChartProps {
   };
 }
 
-const HealthMetricsChart: React.FC<HealthMetricsChartProps> = ({ title, data }) => {
+const SeverityMetricsChart: React.FC<SeverityMetricsChartProps> = ({ title, data }) => {
   const maxValue = Math.max(...data.datasets.flatMap(dataset => dataset.data)) * 1.1;
   
   return (
@@ -42,17 +43,8 @@ const HealthMetricsChart: React.FC<HealthMetricsChartProps> = ({ title, data }) 
           <span>0</span>
         </div>
       </div>
-      
-      <div className="mt-4 flex justify-center space-x-4">
-        {data.datasets.map((dataset, index) => (
-          <div key={index} className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-1`} style={{ backgroundColor: dataset.color }}></div>
-            <span className="text-sm text-gray-600">{dataset.label}</span>
-          </div>
-        ))}
-      </div>
     </Card>
   );
 };
 
-export default HealthMetricsChart;
+export default SeverityMetricsChart;

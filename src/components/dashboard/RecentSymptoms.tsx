@@ -1,20 +1,57 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import Card from '../ui/Card';
 import { Symptom } from '../../types';
 
 interface RecentSymptomsProps {
   symptoms: Symptom[];
-  onAddSymptom: () => void;
+  onAddSymptom: (newSymptom: Symptom) => void;
 }
 
 const RecentSymptoms: React.FC<RecentSymptomsProps> = ({ 
   symptoms, 
   onAddSymptom 
 }) => {
+  const [isAddingSymptom, setIsAddingSymptom] = useState(false);
+  //const [newSymptom, setNewSymptom] = useState({
+    const [newSymptom, setNewSymptom] = useState<Omit<Symptom, 'id'>>({
+
+    name: '',
+    severity: 5,
+    duration: '',
+    severityCategory: 'Moderate',
+  });
+
   const getSeverityColor = (severity: number) => {
     if (severity <= 3) return 'bg-success-500';
     if (severity <= 6) return 'bg-warning-500';
     return 'bg-error-500';
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewSymptom((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    if (newSymptom.name && newSymptom.duration) {
+      onAddSymptom({
+        ...newSymptom,
+        id: Math.random().toString(),
+        severity: parseInt(newSymptom.severity.toString()),
+      });
+      setIsAddingSymptom(false); // Close the form
+    }
+  };
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setNewSymptom((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -24,7 +61,7 @@ const RecentSymptoms: React.FC<RecentSymptomsProps> = ({
           <p className="text-gray-500">No symptoms recorded</p>
           <button 
             className="mt-4 btn btn-primary" 
-            onClick={onAddSymptom}
+            onClick={() => setIsAddingSymptom(true)}
           >
             Record New Symptom
           </button>
@@ -54,14 +91,75 @@ const RecentSymptoms: React.FC<RecentSymptomsProps> = ({
               </div>
             ))}
           </div>
-          
           <div className="mt-4 flex justify-between">
-            <button className="btn btn-outline-primary" onClick={onAddSymptom}>
+            <button className="btn btn-outline-primary" onClick={() => setIsAddingSymptom(true)}>
               Add Symptom
             </button>
             <button className="btn btn-outline">View History</button>
           </div>
         </>
+      )}
+
+      {/* Form for adding new symptom */}
+      {isAddingSymptom && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Add New Symptom</h3>
+          <div>
+            <input
+              type="text"
+              name="name"
+              value={newSymptom.name}
+              onChange={handleInputChange}
+              placeholder="Symptom Name"
+              className="mb-4 p-2 border rounded w-full"
+            />
+            <textarea
+              name="duration"
+              value={newSymptom.duration}
+              onChange={handleInputChange}
+              placeholder="Duration"
+              className="mb-4 p-2 border rounded w-full"
+            />
+            <div className="flex mb-4">
+              <label className="mr-2">Severity (1-10): </label>
+              <input
+                type="number"
+                name="severity"
+                value={newSymptom.severity}
+                onChange={handleInputChange}
+                min="1"
+                max="10"
+                className="p-2 border rounded w-16"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="mr-2">Severity Category: </label>
+              
+              <select
+  name="severityCategory"
+  value={newSymptom.severityCategory}
+  onChange={handleSelectChange}
+  className="p-2 border rounded w-full"
+>
+  <option value="Critical">Critical</option>
+  <option value="Moderate">Moderate</option>
+  <option value="Mild">Mild</option>
+</select>
+            </div>
+            <button 
+              className="btn btn-primary"
+              onClick={handleSubmit}
+            >
+              Save Symptom
+            </button>
+            <button
+              className="btn btn-outline ml-4"
+              onClick={() => setIsAddingSymptom(false)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
     </Card>
   );

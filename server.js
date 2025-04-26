@@ -1,316 +1,4 @@
-// // import express from 'express';
-// // import mongoose from 'mongoose';
-// // import cors from 'cors';
-// // import { v4 as uuidv4 } from 'uuid';
 
-// // // ==== Mongoose Models ====
-
-// // // Doctor Model
-// // const doctorSchema = new mongoose.Schema({
-// //   name: String,
-// //   email: { type: String, unique: true },
-// //   password: String,
-// //   specialization: String,
-// //   licenseNumber: String,
-// //   uniqueCode: { type: String, default: uuidv4 },
-// //   patients: [
-// //     {
-// //       username: String,
-// //       password: String,
-// //     }
-// //   ],
-// // });
-// // const Doctor = mongoose.model('Doctor', doctorSchema);
-
-// // // Patient Model
-// // const patientSchema = new mongoose.Schema({
-// //   doctorCode: String,
-// //   username: String,
-// //   password: String,
-// // });
-// // const Patient = mongoose.model('Patient', patientSchema);
-
-// // // ==== Express App Setup ====
-
-// // const app = express();
-// // app.use(cors());
-// // app.use(express.json());
-
-// // // ==== MongoDB Connection ====
-
-// // mongoose.connect('mongodb://localhost:27017/recoveryTracker', {
-// //   useNewUrlParser: true,
-// //   useUnifiedTopology: true,
-// // })
-// // .then(() => console.log('✅ MongoDB connected'))
-// // .catch(err => console.error('❌ MongoDB connection error:', err));
-
-// // // ==== Doctor Routes ====
-
-// // app.post('/api/doctor/signup', async (req, res) => {
-// //   const { name, email, password, specialization, licenseNumber } = req.body;
-
-// //   try {
-// //     const existing = await Doctor.findOne({ email });
-// //     if (existing) return res.status(400).json({ msg: 'Email already in use' });
-
-// //     const doctor = new Doctor({ name, email, password, specialization, licenseNumber });
-// //     await doctor.save();
-
-// //     res.status(201).json({ msg: 'Doctor registered', code: doctor.uniqueCode });
-// //   } catch (err) {
-// //     res.status(500).json({ msg: 'Error registering doctor' });
-// //   }
-// // });
-
-// // app.post('/api/doctor/login', async (req, res) => {
-// //   const { email, password } = req.body;
-
-// //   try {
-// //     const doctor = await Doctor.findOne({ email, password });
-// //     if (!doctor) return res.status(401).json({ msg: 'Invalid credentials' });
-
-// //     res.json({ msg: 'Login successful', code: doctor.uniqueCode });
-// //   } catch (err) {
-// //     res.status(500).json({ msg: 'Error logging in' });
-// //   }
-// // });
-
-// // // app.post('/api/doctor/add-patient', async (req, res) => {
-// // //   const { doctorCode, username, password } = req.body;
-
-// // //   try {
-// // //     const doctor = await Doctor.findOne({ uniqueCode: doctorCode });
-// // //     if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
-
-// // //     const exists = doctor.patients.find(p => p.username === username);
-// // //     if (exists) return res.status(400).json({ msg: 'Patient already exists' });
-
-// // //     doctor.patients.push({ username, password });
-// // //     await doctor.save();
-
-// // //     res.status(201).json({ msg: 'Patient added successfully' });
-// // //   } catch (err) {
-// // //     res.status(500).json({ msg: 'Error adding patient' });
-// // //   }
-// // // });
-
-// // // ==== Patient Routes ====
-// // app.post('/api/doctor/add-patient', async (req, res) => {
-// //   const { doctorCode, username, password } = req.body;
-
-// //   try {
-// //     // Check if doctor exists
-// //     const doctor = await Doctor.findOne({ uniqueCode: doctorCode });
-// //     if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
-
-// //     // Check if this patient already exists for this doctor
-// //     const existingPatient = await Patient.findOne({ doctorCode, username });
-// //     if (existingPatient) return res.status(400).json({ msg: 'Patient already exists' });
-
-// //     // Create and save patient in the collection
-// //     const newPatient = new Patient({ doctorCode, username, password });
-// //     await newPatient.save();
-
-// //     res.status(201).json({ msg: 'Patient added successfully' });
-// //   } catch (err) {
-// //     console.error(err);
-// //     res.status(500).json({ msg: 'Error adding patient' });
-// //   }
-// // });
-
-// // app.post('/api/patient/login', async (req, res) => {
-// //   const { doctorCode, username, password } = req.body;
-
-// //   try {
-// //     const doctor = await Doctor.findOne({ uniqueCode: doctorCode });
-// //     if (!doctor) return res.status(404).json({ msg: 'Doctor not found' });
-
-// //     const patient = doctor.patients.find(p => p.username === username && p.password === password);
-// //     if (!patient) return res.status(401).json({ msg: 'Invalid credentials' });
-
-// //     res.json({ msg: 'Patient login successful' });
-// //   } catch (err) {
-// //     res.status(500).json({ msg: 'Login failed' });
-// //   }
-// // });
-
-
-// // app.post('/api/doctor/add-patient', async (req, res) => {
-// //     const { doctorCode, patientName, patientDetails } = req.body;
-  
-// //     // Check if doctor exists with the given code
-// //     const doctor = await Doctor.findOne({ uniqueCode: doctorCode });
-    
-// //     if (!doctor) {
-// //       return res.status(404).json({ msg: 'Doctor not found' });
-// //     }
-  
-// //     // Add the patient to the doctor's patient list
-// //     const newPatient = new Patient({ name: patientName, details: patientDetails });
-    
-// //     // Save patient to database
-// //     await newPatient.save();
-  
-// //     doctor.patients.push(newPatient._id); // Add patient ID to doctor's patient list
-// //     await doctor.save();
-  
-// //     res.status(200).json({ msg: 'Patient added successfully' });
-// //   });
-  
-  
-// // // ==== Server Start ====
-
-// // const PORT = process.env.PORT || 5000;
-// // app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-// import express from 'express';
-// import mongoose from 'mongoose';
-// import cors from 'cors';
-// import { v4 as uuidv4 } from 'uuid';
-
-// // ==== Mongoose Models ====
-
-// // Doctor Model
-// const doctorSchema = new mongoose.Schema({
-//   name: String,
-//   email: { type: String, unique: true },
-//   password: String,
-//   specialization: String,
-//   licenseNumber: String,
-//   uniqueCode: { type: String, default: uuidv4 },
-// });
-// const Doctor = mongoose.model('Doctor', doctorSchema);
-
-// // Patient Model
-// // const patientSchema = new mongoose.Schema({
-// //   doctorCode: String,
-// //   username: String,
-// //   password: String,
-// // });
-// // Add this updated schema
-// const patientSchema = new mongoose.Schema({
-//   doctorCode: String,
-//   username: String,
-//   password: String,
-//   diseaseName: String,
-//   expectedRecoveryTime: String,
-//   followUpDate: String,
-//   medicines: [
-//     {
-//       name: String,
-//       time: String
-//     }
-//   ]
-// });
-
-// const Patient = mongoose.model('Patient', patientSchema);
-
-// // ==== Express App Setup ====
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
-
-// // ==== MongoDB Connection ====
-// mongoose.connect('mongodb://localhost:27017/recoveryTracker', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-// .then(() => console.log('✅ MongoDB connected'))
-// .catch(err => console.error('❌ MongoDB connection error:', err));
-
-// // ==== Doctor Routes ====
-// app.post('/api/doctor/signup', async (req, res) => {
-//   const { name, email, password, specialization, licenseNumber } = req.body;
-
-//   try {
-//     const existing = await Doctor.findOne({ email });
-//     if (existing) return res.status(400).json({ msg: 'Email already in use' });
-
-//     const doctor = new Doctor({ name, email, password, specialization, licenseNumber });
-//     await doctor.save();
-
-//     res.status(201).json({ msg: 'Doctor registered', code: doctor.uniqueCode });
-//   } catch (err) {
-//     res.status(500).json({ msg: 'Error registering doctor' });
-//   }
-// });
-
-// app.post('/api/doctor/login', async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     const doctor = await Doctor.findOne({ email, password });
-//     if (!doctor) return res.status(401).json({ msg: 'Invalid credentials' });
-
-//     res.json({ msg: 'Login successful', code: doctor.uniqueCode });
-//   } catch (err) {
-//     res.status(500).json({ msg: 'Error logging in' });
-//   }
-// });
-
-// app.post('/api/doctor/add-patient', async (req, res) => {
-//   const {
-//     username,
-//     password,
-//     diseaseName,
-//     expectedRecoveryTime,
-//     followUpDate,
-//     medicines
-//   } = req.body;
-
-//   try {
-//     const doctorCode = req.headers['doctor-code'] || req.body.doctorCode || null;
-
-//     if (!doctorCode) {
-//       return res.status(403).json({ msg: 'Doctor not authenticated.' });
-//     }
-
-//     const doctor = await Doctor.findOne({ uniqueCode: doctorCode });
-//     if (!doctor) {
-//       return res.status(404).json({ msg: 'Doctor not found' });
-//     }
-
-//     const existingPatient = await Patient.findOne({ doctorCode, username });
-//     if (existingPatient) {
-//       return res.status(400).json({ msg: 'Patient already exists' });
-//     }
-
-//     const newPatient = new Patient({
-//       doctorCode,
-//       username,
-//       password,
-//       diseaseName,
-//       expectedRecoveryTime,
-//       followUpDate,
-//       medicines
-//     });
-
-//     await newPatient.save();
-
-//     res.status(201).json({ msg: 'Patient added successfully' });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ msg: 'Error adding patient' });
-//   }
-// });
-
-// // Patient Login
-// app.post('/api/patient/login', async (req, res) => {
-//   const { doctorCode, username, password } = req.body;
-
-//   try {
-//     const patient = await Patient.findOne({ doctorCode, username, password });
-//     if (!patient) return res.status(401).json({ msg: 'Invalid credentials' });
-
-//     res.json({ msg: 'Patient login successful' });
-//   } catch (err) {
-//     res.status(500).json({ msg: 'Login failed' });
-//   }
-// });
-
-// // ==== Start Server ====
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -327,20 +15,118 @@ const doctorSchema = new mongoose.Schema({
   uniqueCode: { type: String, default: uuidv4 },
 });
 const Doctor = mongoose.model('Doctor', doctorSchema);
+const SymptomSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  severity: { type: String, required: true }, // example field
+  note: { type: String, required: false }      // optional additional note
+});
 
 const patientSchema = new mongoose.Schema({
-  doctorCode: String,
-  username: String,
-  password: String,
-  diseaseName: String,
-  expectedRecoveryTime: String,
-  followUpDate: String,
-  medicines: [
+  doctorCode: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  diseaseName: {
+    type: String,
+    required: true
+  },
+  expectedRecoveryTime: {
+    type: String,
+    required: true
+  },
+  dischargeDate: {
+    type: String,
+    required: false, // Optional
+    default: ''
+  },
+  followUpDate: {
+    type: String,
+    required: true
+  },
+  medications: [
     {
-      name: String,
-      time: String
+      name: {
+        type: String,
+        required: true
+      },
+      time: {
+        type: String,
+        required: true
+      }
     }
-  ]
+  ],
+  // MongoDB patient schema (example)
+symptoms: [
+  {
+    date: String, // ISO format
+    entries: [SymptomSchema]
+  }
+],
+recoveryScores: [
+  {
+    date: String,
+    score: Number
+  }
+],
+  healthMetricsData: {
+    // Define the structure of health metrics data (example for pain level trend)
+    type: Array,
+    required: false
+  },
+  symptoms: [
+    {
+      date: String, // ISO format date
+      entries: [SymptomSchema]
+    }
+  ],
+  recoveryTrendData: {
+    // Define the structure of recovery trend data (could be an array, object, or whatever format your charting expects)
+    type: Array,
+    required: false
+  },
+  vitalsSummary: {
+    status: {
+      type: String,
+      default: 'normal'
+    },
+    lastUpdated: {
+      type: String,
+      required: false, // ← make optional
+      default: ''
+    }
+  },
+  nextAppointment: {
+    type: {
+      type: String,
+      required: false, // ← make optional
+      default: ''
+    },
+    doctor: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    date: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  },
+ 
+  
+  medicationAdherence: {
+    type: Number,  // A value between 0 and 100
+    required: false
+  }
 });
 const Patient = mongoose.model('Patient', patientSchema);
 
@@ -376,6 +162,52 @@ app.post('/api/doctor/signup', async (req, res) => {
     res.status(500).json({ msg: 'Error registering doctor' });
   }
 });
+// In your Express server
+app.get('/patient/:username', async (req, res) => {
+  const { username } = req.params;
+  
+  try {
+    const patient = await Patient.findOne({ username: username }); // Assuming you're using MongoDB
+    if (!patient) {
+      return res.status(404).json({ msg: 'Patient not found' });
+    }
+
+    res.json(patient);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+// POST /patient/:username/symptoms
+app.post('/patient/:username/symptoms', async (req, res) => {
+  const { symptom } = req.body;
+  const today = new Date().toISOString().split('T')[0];
+
+  const patient = await Patient.findOne({ username: req.params.username });
+  if (!patient) return res.status(404).send('Patient not found');
+
+  let todaySymptoms = patient.symptoms.find(s => s.date === today);
+  if (!todaySymptoms) {
+    todaySymptoms = { date: today, entries: [] };
+    patient.symptoms.push(todaySymptoms);
+  }
+
+  todaySymptoms.entries.push(symptom);
+
+  // Calculate a recovery score (placeholder logic: lower symptom count = better score)
+  const score = 100 - todaySymptoms.entries.length * 10;
+  const existingScore = patient.recoveryScores.find(s => s.date === today);
+  if (existingScore) {
+    existingScore.score = score;
+  } else {
+    patient.recoveryScores.push({ date: today, score });
+  }
+
+  await patient.save();
+  res.send(patient);
+});
+
 
 app.post('/api/doctor/login', async (req, res) => {
   const { email, password } = req.body;
@@ -393,6 +225,7 @@ app.post('/api/doctor/login', async (req, res) => {
 
 // ==== Add Patient ====
 
+
 app.post('/api/doctor/add-patient', async (req, res) => {
   const {
     username,
@@ -400,10 +233,15 @@ app.post('/api/doctor/add-patient', async (req, res) => {
     diseaseName,
     expectedRecoveryTime,
     followUpDate,
-    medicines
+    medications,
+    healthMetricsData,
+    symptoms,
+    recoveryTrendData,
+    vitalsSummary,
+    nextAppointment,
+    medicationAdherence
   } = req.body;
 
-  // Try getting doctorCode from request body or headers
   const doctorCode = req.body.doctorCode || req.headers['doctor-code'];
 
   if (!doctorCode) {
@@ -421,12 +259,26 @@ app.post('/api/doctor/add-patient', async (req, res) => {
 
     const newPatient = new Patient({
       doctorCode,
-      username,
-      password,
-      diseaseName,
-      expectedRecoveryTime,
-      followUpDate,
-      medicines,
+      username: username || '',
+      password: password || '',
+      diseaseName: diseaseName || '',
+      expectedRecoveryTime: expectedRecoveryTime || '',
+      followUpDate: followUpDate || '',
+      medications: medications || [],
+      healthMetricsData: healthMetricsData || [],
+      symptoms: symptoms || [],
+      recoveryTrendData: recoveryTrendData || [],
+      vitalsSummary: vitalsSummary || {
+        status: 'normal',
+        lastUpdated: ''
+      },
+      nextAppointment: nextAppointment || {
+        date: '',
+        doctor: '',
+        type: ''
+      },
+      medicationAdherence: medicationAdherence || 0,
+      dischargeDate: new Date().toISOString() // ← set current date automatically
     });
 
     await newPatient.save();

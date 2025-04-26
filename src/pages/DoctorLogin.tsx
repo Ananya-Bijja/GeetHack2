@@ -31,17 +31,12 @@ const DoctorLogin: React.FC<DoctorLoginProps> = ({ onLogin }) => {
       });
 
       const data = await response.json();
-      // if (response.ok) {
-      //   onLogin('doctor');
-      //   navigate('/doctor/options'); // Navigate to the doctor dashboard
-      // } 
       if (response.ok) {
         localStorage.setItem('doctorCode', data.code); // ✅ Store doctorCode for future use
+        localStorage.setItem('doctorUsername', data.username); // Store doctor's username
         onLogin('doctor');
         navigate('/doctor/options');
-      }
-      
-      else {
+      } else {
         setErrorMessage(data.msg || 'Login failed');
       }
     } catch (err) {

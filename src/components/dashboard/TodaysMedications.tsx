@@ -4,14 +4,14 @@ import { Check, Clock, AlertCircle } from 'lucide-react';
 import { Medication } from '../../types';
 
 interface TodaysMedicationsProps {
-  medications: {
+  medications?: {  // Make medications optional
     medication: Medication;
     status: 'taken' | 'scheduled' | 'missed';
     time: string;
-  }[];
+  }[];  
 }
 
-const TodaysMedications: React.FC<TodaysMedicationsProps> = ({ medications }) => {
+const TodaysMedications: React.FC<TodaysMedicationsProps> = ({ medications = [] }) => {  // Default empty array if undefined
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'taken':
@@ -54,22 +54,26 @@ const TodaysMedications: React.FC<TodaysMedicationsProps> = ({ medications }) =>
   return (
     <Card title="Today's Medications">
       <div className="divide-y divide-gray-100">
-        {medications.map((item, index) => (
-          <div key={index} className="py-3 flex items-center justify-between">
-            <div className="flex items-center">
-              <div className={`p-2 rounded-md ${getStatusStyles(item.status)}`}>
-                {getStatusIcon(item.status)}
+        {medications && medications.length > 0 ? (
+          medications.map((item, index) => (
+            <div key={index} className="py-3 flex items-center justify-between">
+              <div className="flex items-center">
+                <div className={`p-2 rounded-md ${getStatusStyles(item.status)}`}>
+                  {getStatusIcon(item.status)}
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-900">{item.medication?.name || 'Unknown Medication'}</p>
+                  <p className="text-xs text-gray-500">{item.medication?.dosage || 'No Dosage'} - {item.time || 'No Time'}</p>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-900">{item.medication.name}</p>
-                <p className="text-xs text-gray-500">{item.medication.dosage} - {item.time}</p>
+              <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(item.status)}`}>
+                {getStatusText(item.status)}
               </div>
             </div>
-            <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyles(item.status)}`}>
-              {getStatusText(item.status)}
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <div className="py-3 text-center text-gray-500">No medications scheduled for today.</div>
+        )}
       </div>
       
       <div className="mt-4">

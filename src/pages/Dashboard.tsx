@@ -1,163 +1,141 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import PatientOverview from '../components/dashboard/PatientOverview';
-import HealthMetricsChart from '../components/dashboard/HealthMetricsChart';
 import TodaysMedications from '../components/dashboard/TodaysMedications';
 import RecentSymptoms from '../components/dashboard/RecentSymptoms';
-import RecoveryTrendChart from '../components/analytics/RecoveryTrendChart';
 import { Medication, Symptom } from '../types';
-
-// Mock data - in a real app this would come from an API
-const patientData = {
-  name: 'John Doe',
-  diagnosis: 'Post-Cardiac Surgery Recovery',
-  status: 'improving' as const,
-  dischargeDate: '2025-05-01',
+import RecoveryGraph from '../components/analytics/RecoveryGraph';
+// Define types for patient data
+interface PatientData {
+  name: string;
+  diagnosis: string;
+  status: 'improving' | 'stable' | 'critical';
+  dischargeDate: string;
   nextAppointment: {
-    date: 'May 21, 2025',
-    doctor: 'Dr. Sarah Smith',
-    type: 'Follow-up',
-  },
-  medicationAdherence: 92,
+    date: string;
+    doctor: string;
+    type: string;
+  };
+  medicationAdherence: number;
   vitalsSummary: {
-    status: 'normal' as const,
-    lastUpdated: '2 hours ago',
-  },
-};
-
-const mockMedications: Array<{
-  medication: Medication;
-  status: 'taken' | 'scheduled' | 'missed';
-  time: string;
-}> = [
-  {
-    medication: {
-      id: '1',
-      name: 'Lisinopril',
-      dosage: '10mg',
-      frequency: 'Once daily',
-      timeOfDay: ['Morning'],
-      startDate: '2025-05-01',
-    },
-    status: 'taken',
-    time: '8:00 AM',
-  },
-  {
-    medication: {
-      id: '2',
-      name: 'Metoprolol',
-      dosage: '25mg',
-      frequency: 'Twice daily',
-      timeOfDay: ['Morning', 'Evening'],
-      startDate: '2025-05-01',
-    },
-    status: 'scheduled',
-    time: '8:00 PM',
-  },
-  {
-    medication: {
-      id: '3',
-      name: 'Aspirin',
-      dosage: '81mg',
-      frequency: 'Once daily',
-      timeOfDay: ['Morning'],
-      startDate: '2025-05-01',
-    },
-    status: 'taken',
-    time: '8:00 AM',
-  },
-  {
-    medication: {
-      id: '4',
-      name: 'Atorvastatin',
-      dosage: '20mg',
-      frequency: 'Once daily',
-      timeOfDay: ['Evening'],
-      startDate: '2025-05-01',
-    },
-    status: 'scheduled',
-    time: '8:00 PM',
-  },
-];
-
-const mockSymptoms: Symptom[] = [
-  {
-    id: '1',
-    name: 'Chest Pain',
-    severity: 2,
-    duration: '10 minutes',
-  },
-  {
-    id: '2',
-    name: 'Shortness of Breath',
-    severity: 4,
-    duration: '5 minutes after activity',
-  },
-  {
-    id: '3',
-    name: 'Fatigue',
-    severity: 6,
-    duration: 'All day',
-  },
-];
-
-const mockHealthMetricsData = {
-  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  datasets: [
-    {
-      label: 'Pain Level',
-      data: [7, 6, 5, 6, 4, 3, 2],
-      color: '#3B82F6',
-    },
-  ],
-};
-
-const mockRecoveryTrendData = {
-  dates: [
-    '2025-05-02',
-    '2025-05-03',
-    '2025-05-04',
-    '2025-05-05',
-    '2025-05-06',
-    '2025-05-07',
-    '2025-05-08',
-  ],
-  painLevels: [8, 7, 6, 5, 5, 4, 3],
-  medicationAdherence: [100, 75, 100, 75, 100, 100, 100],
-  symptomsCount: [5, 4, 4, 3, 2, 2, 1],
-  overallStatus: 'improving' as const,
-  score: 78,
-};
+    status: 'normal' | 'critical';
+    lastUpdated: string;
+  };
+  medications: Medication[];
+  symptoms: Symptom[];
+}
 
 const Dashboard: React.FC = () => {
-  const handleAddSymptom = () => {
-    alert('Add symptom functionality would open a form here');
+  const location = useLocation();
+  const username = location.state?.username; // Accessing the username from location state
+
+  const [patientData, setPatientData] = useState<PatientData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Fetch patient data based on username
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/patient/${username}`);
+        const data: PatientData = await response.json();  // Type the response data
+
+        if (response.ok) {
+          setPatientData(data); // Assuming the data contains the necessary patient details
+          setLoading(false);
+        } else {
+          setErrorMessage('Failed to fetch patient data');
+          setLoading(false);
+        }
+      } catch (error) {
+        setErrorMessage('Error fetching data');
+        setLoading(false);
+      }
+    };
+
+    if (username) {
+      fetchPatientData();
+    }
+  }, [username]);
+
+  const handleAddSymptom = async (newSymptom: Symptom) => {
+    try {
+      const response = await fetch(`http://localhost:5000/patient/${username}/symptoms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symptom: newSymptom }),
+      });
+  
+      if (response.ok) {
+        const updatedData = await response.json();
+        setPatientData(updatedData);
+      } else {
+        console.error('Failed to update symptom');
+      }
+    } catch (err) {
+      console.error('Error adding symptom:', err);
+    }
+  };
+  
+  
+  
+
+  if (loading) return <div>Loading...</div>;
+  if (errorMessage) return <div>{errorMessage}</div>;
+
+  // Fallback for undefined or missing data
+  const safePatientData = patientData || {
+    name: 'Unknown',
+    diagnosis: 'Not specified',
+    status: 'stable',
+    dischargeDate: 'N/A',
+    nextAppointment: {
+      date: 'N/A',
+      doctor: 'N/A',
+      type: 'N/A',
+    },
+    medicationAdherence: 0,
+    vitalsSummary: {
+      status: 'normal',
+      lastUpdated: 'N/A',
+    },
+    medications: [],
+    symptoms: [],
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <PatientOverview {...patientData} />
-
+      <h2 className="text-2xl font-bold mb-4">Hi, {username}!</h2> {/* Greeting with username */}
+      <PatientOverview 
+        name={safePatientData.name} 
+        diagnosis={safePatientData.diagnosis} 
+        status={safePatientData.status} 
+        dischargeDate={safePatientData.dischargeDate} 
+        nextAppointment={safePatientData.nextAppointment} 
+        medicationAdherence={safePatientData.medicationAdherence} 
+        vitalsSummary={safePatientData.vitalsSummary} 
+        username={username} 
+      />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-6">
         <div className="lg:col-span-2">
-          <HealthMetricsChart 
-            title="Pain Level Trend (Last 7 Days)"
-            data={mockHealthMetricsData}
-          />
+          {/* Add other components or content here */}
         </div>
         <div>
-          <TodaysMedications medications={mockMedications} />
+          <TodaysMedications medications={safePatientData.medications} />
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 my-6">
         <div>
           <RecentSymptoms 
-            symptoms={mockSymptoms} 
+            symptoms={safePatientData.symptoms} 
             onAddSymptom={handleAddSymptom} 
           />
         </div>
+        <div className="my-6">
+  <RecoveryGraph recoveryScores={safePatientData.recoveryScores || []} />
+</div>
         <div className="lg:col-span-2">
-          <RecoveryTrendChart data={mockRecoveryTrendData} />
         </div>
       </div>
     </div>
